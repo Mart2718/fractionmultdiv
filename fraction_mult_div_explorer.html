@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Fraction Multiplication & Division · Math 204</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1a2e;--ink2:#2d2d4e;
+  --sage:#2d6a4f;--sagelt:#d8f3dc;
+  --rust:#c1440e;--rustlt:#fde8dd;
+  --gold:#b5830a;--goldlt:#fef9e7;
+  --plum:#5c2d91;--plumlt:#f0e6ff;
+  --sky:#1565c0;--skylt:#e3f2fd;
+  --teal:#006064;--teallt:#e0f7fa;
+  --cream:#fdfcf8;--white:#ffffff;
+  --gray:#6b7280;--graylt:#f4f4f6;--border:#e5e7eb;
+  --font-h:'Lora',Georgia,serif;
+  --font-b:'DM Sans',system-ui,sans-serif;
+  --r:12px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-b);background:var(--cream);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.55}
+
+/* ── HEADER ── */
+.hdr{background:var(--ink);padding:20px 28px 16px;color:white;position:relative;overflow:hidden}
+.hdr::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.015) 0,rgba(255,255,255,.015) 1px,transparent 1px,transparent 16px)}
+.hdr-kicker{font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.45;margin-bottom:5px}
+.hdr h1{font-family:var(--font-h);font-size:clamp(20px,3.5vw,28px);font-weight:700;letter-spacing:-.01em;margin-bottom:4px}
+.hdr-sub{font-size:12px;opacity:.45}
+
+/* ── NAV ── */
+.tab-nav{background:var(--ink2);display:flex;overflow-x:auto;border-bottom:3px solid var(--gold);scrollbar-width:none}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{padding:12px 20px;background:transparent;color:rgba(255,255,255,.5);border:none;cursor:pointer;font-size:13px;font-weight:500;font-family:var(--font-b);transition:all .17s;white-space:nowrap;flex-shrink:0}
+.tab-btn.active{background:var(--gold);color:white;font-weight:700}
+.tab-btn:hover:not(.active){color:rgba(255,255,255,.85)}
+
+/* ── LAYOUT ── */
+.main{max-width:960px;margin:0 auto;padding:26px 18px 70px}
+.panel{display:none;animation:fadeUp .22s ease}
+.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── CARDS ── */
+.card{background:var(--white);border-radius:var(--r);padding:22px;box-shadow:0 2px 12px rgba(26,26,46,.07);border:1px solid var(--border);margin-bottom:18px}
+.card-ink{background:var(--ink);color:white}
+.card-sage{background:var(--sagelt);border-color:rgba(45,106,79,.25)}
+.card-rust{background:var(--rustlt);border-color:rgba(193,68,14,.2)}
+.card-gold{background:var(--goldlt);border-color:rgba(181,131,10,.25)}
+.card-plum{background:var(--plumlt);border-color:rgba(92,45,145,.2)}
+.card-sky{background:var(--skylt);border-color:rgba(21,101,192,.2)}
+.card-teal{background:var(--teallt);border-color:rgba(0,96,100,.2)}
+
+/* ── TYPE ── */
+.h2{font-family:var(--font-h);font-size:21px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.h3{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:10px}
+.h3-sage{color:var(--sage)}
+.h3-rust{color:var(--rust)}
+.h3-plum{color:var(--plum)}
+.h3-sky{color:var(--sky)}
+.lbl{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gray);margin-bottom:6px}
+.badge{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:3px 10px;border-radius:99px;margin-bottom:10px}
+.badge-sage{background:var(--sagelt);color:var(--sage)}
+.badge-rust{background:var(--rustlt);color:var(--rust)}
+.badge-plum{background:var(--plumlt);color:var(--plum)}
+.badge-sky{background:var(--skylt);color:var(--sky)}
+.badge-teal{background:var(--teallt);color:var(--teal)}
+.badge-gold{background:var(--goldlt);color:var(--gold)}
+
+/* ── INPUTS ── */
+.num-inp{padding:8px 10px;border-radius:7px;border:2px solid var(--border);font-size:18px;width:62px;text-align:center;color:var(--ink);font-weight:700;font-family:var(--font-b);background:white;outline:none;transition:border-color .2s}
+.num-inp:focus{border-color:var(--gold)}
+.fraction-input{display:inline-flex;flex-direction:column;align-items:center;gap:1px}
+.frac-line{width:50px;height:2px;background:var(--ink);margin:1px 0}
+.frac-build{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.op-sym{font-size:22px;font-weight:700;color:var(--gray);padding-top:8px}
+
+/* ── BUTTONS ── */
+.btn{padding:9px 20px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font-b);transition:all .17s;letter-spacing:.01em}
+.btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.btn:active{transform:none}
+.btn:disabled{opacity:.4;cursor:default;transform:none;filter:none}
+.btn-gold{background:var(--gold);color:white}
+.btn-sage{background:var(--sage);color:white}
+.btn-rust{background:var(--rust);color:white}
+.btn-plum{background:var(--plum);color:white}
+.btn-sky{background:var(--sky);color:white}
+.btn-ink{background:var(--ink);color:white}
+.btn-ghost{background:var(--graylt);color:var(--gray)}
+.btn-sm{padding:6px 13px;font-size:12px}
+.btn-outline-plum{background:transparent;color:var(--plum);border:1px solid var(--plum) !important}
+
+/* ── CONTROLS ROW ── */
+.ctrl-row{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+.step-ctr{font-size:12px;color:var(--gray);margin-left:auto;margin-right:8px}
+
+/* ── METHOD TABS ── */
+.meth-nav{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.meth-btn{padding:8px 14px;border-radius:8px 8px 4px 4px;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font-b);background:var(--graylt);color:var(--gray);transition:all .15s}
+.meth-btn:hover:not(.mact){background:var(--border)}
+.mact-plum{background:var(--plum) !important;color:white !important;border-bottom-color:#c4b5fd !important}
+.mact-sky{background:var(--sky) !important;color:white !important;border-bottom-color:#90caf9 !important}
+
+/* ── SVG CANVAS ── */
+.svg-wrap{border-radius:10px;overflow:hidden;background:var(--graylt);padding:16px;display:flex;justify-content:center;margin-bottom:14px}
+svg{overflow:visible}
+
+/* ── RESULT BANNER ── */
+.result-ban{border-radius:10px;padding:16px;text-align:center;margin-top:12px;animation:popIn .3s cubic-bezier(.34,1.56,.64,1)}
+.result-ban .rb-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.result-ban .rb-val{font-size:28px;font-weight:800;font-family:var(--font-h);letter-spacing:-.02em}
+.result-gold{background:var(--goldlt);border:2px solid rgba(181,131,10,.3)}
+.result-gold .rb-lbl{color:var(--gold)}
+.result-gold .rb-val{color:var(--gold)}
+.result-sage{background:var(--sagelt);border:2px solid rgba(45,106,79,.3)}
+.result-sage .rb-lbl{color:var(--sage)}
+.result-sage .rb-val{color:var(--sage)}
+.result-plum{background:var(--plumlt);border:2px solid rgba(92,45,145,.3)}
+.result-plum .rb-lbl{color:var(--plum)}
+.result-plum .rb-val{color:var(--plum)}
+@keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+
+/* ── STEP BOXES ── */
+.step-box{border-radius:8px;padding:12px 15px;margin-bottom:8px;border:1px solid transparent;transition:all .2s;animation:slideIn .22s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1}}
+.step-box.cur{background:var(--goldlt);border-color:rgba(181,131,10,.35)}
+.step-box.done{background:var(--graylt)}
+.step-box .sb-num{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);margin-bottom:4px}
+.step-box .sb-body{font-size:14px;line-height:1.7;color:var(--ink2)}
+.step-box .sb-eq{font-size:16px;font-weight:700;color:var(--ink);margin-top:4px;font-family:var(--font-h)}
+
+/* ── GRIDS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:560px){.g2{grid-template-columns:1fr}.g3{grid-template-columns:1fr}}
+
+/* ── FRACTION STRIPS ── */
+.strip-wrap{overflow-x:auto;padding-bottom:4px}
+.strip-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;min-width:max-content}
+.strip-lbl{font-size:12px;font-weight:700;color:var(--gray);min-width:60px}
+.strip-unit{height:34px;border-radius:4px;border:2px solid white;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;transition:all .3s}
+
+/* ── PRACTICE ── */
+.score-hdr{background:var(--ink);color:white;border-radius:14px;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.score-hdr .sl{font-size:13px;opacity:.6}
+.score-nums{display:flex;align-items:center;gap:14px}
+.sn{text-align:center}
+.sn-v{font-size:24px;font-weight:800;color:var(--goldlt)}
+.sn-s{font-size:10px;opacity:.5}
+.prob-card{background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);border-radius:12px;padding:22px;text-align:center;margin-bottom:20px}
+.prob-card .pc-ask{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.prob-card .pc-type{font-size:16px;font-weight:700;color:var(--goldlt);margin-bottom:10px}
+.prob-card .pc-expr{font-size:clamp(28px,6vw,46px);font-weight:900;color:white;font-family:var(--font-h);letter-spacing:-.02em}
+.ans-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px}
+.fb{border-radius:10px;padding:13px 16px;margin-bottom:12px;animation:popIn .22s ease}
+.fb .fb-t{font-size:15px;font-weight:700;margin-bottom:3px}
+.fb .fb-d{font-size:13px;opacity:.85}
+.fb-ok{background:var(--sagelt);border:1px solid rgba(45,106,79,.3)}
+.fb-ok .fb-t,.fb-ok .fb-d{color:var(--sage)}
+.fb-no{background:var(--rustlt);border:1px solid rgba(193,68,14,.25)}
+.fb-no .fb-t,.fb-no .fb-d{color:var(--rust)}
+.num-inp.cor{border-color:var(--sage)!important}
+.num-inp.wrg{border-color:var(--rust)!important}
+
+/* ── INFO BOXES ── */
+.info-box{background:rgba(255,255,255,.08);border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.65;margin-bottom:14px}
+.info-box.warn{background:var(--rustlt);color:var(--rust);border-left:4px solid var(--rust)}
+.info-box.tip{background:var(--goldlt);color:var(--gold);border-left:4px solid var(--gold)}
+.info-box.note{background:var(--skylt);color:var(--sky);border-left:4px solid var(--sky)}
+
+/* ── CASE SELECTOR ── */
+.case-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.case-btn{padding:8px 16px;border-radius:99px;border:2px solid var(--border);cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font-b);background:white;color:var(--gray);transition:all .17s}
+.case-btn.cact{background:var(--sage);color:white;border-color:var(--sage)}
+.case-btn:hover:not(.cact){border-color:var(--sage);color:var(--sage)}
+
+/* ── MISC ── */
+.divider{height:1px;background:var(--border);margin:16px 0}
+.text-sage{color:var(--sage)}.text-rust{color:var(--rust)}.text-plum{color:var(--plum)}
+.text-sky{color:var(--sky)}.text-gold{color:var(--gold)}.text-gray{color:var(--gray)}
+.font-7{font-weight:700}.font-8{font-weight:800}
+.text-sm{font-size:13px}.text-xs{font-size:11px}
+.mt-10{margin-top:10px}.mt-14{margin-top:14px}.mb-12{margin-bottom:12px}
+.flex{display:flex}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}
+.justify-between{justify-content:space-between}.gap-8{gap:8px}.gap-12{gap:12px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-kicker">Math 204 · Section 6.3 · Santa Ana College</div>
+  <h1>Multiplication &amp; Division of Fractions</h1>
+  <p class="hdr-sub">Interactive Visual Explorer · Dr. Romero</p>
+</div>
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('mult',this)">✕ Multiplication</button>
+  <button class="tab-btn" onclick="switchTab('divmean',this)">÷ Division: Meaning</button>
+  <button class="tab-btn" onclick="switchTab('divmeth',this)">÷ Division: Methods</button>
+  <button class="tab-btn" onclick="switchTab('practice',this)">✦ Practice</button>
+</nav>
+<main class="main">
+
+<!-- ═══════════ MULTIPLICATION ═══════════ -->
+<section id="tab-mult" class="panel active">
+
+  <div class="card card-ink" style="margin-bottom:18px">
+    <div class="lbl" style="color:rgba(255,255,255,.45);margin-bottom:6px">SLO 6.3 · Conceptual Foundation</div>
+    <p style="font-size:14px;line-height:1.75;opacity:.88">
+      Conceptual understanding must come <em>first</em>. Students need to see <strong style="color:var(--goldlt)">why</strong> it makes sense before executing procedures.
+      Explore the three cases your textbook identifies, then see the visual <strong style="color:var(--goldlt)">area model</strong> that makes fraction × fraction visible.
+    </p>
+  </div>
+
+  <!-- Case selector -->
+  <div class="card">
+    <div class="h2">Three Cases of Fraction Multiplication</div>
+    <div class="case-tabs">
+      <button class="case-btn cact" onclick="setCase(1,this)">Case 1: Whole × Fraction</button>
+      <button class="case-btn" onclick="setCase(2,this)">Case 2: Fraction × Whole</button>
+      <button class="case-btn" onclick="setCase(3,this)">Case 3: Fraction × Fraction</button>
+    </div>
+
+    <!-- Case 1 -->
+    <div id="case1">
+      <span class="badge badge-sage">REPEATED ADDITION</span>
+      <div class="h3 h3-sage">Case 1: Whole Number × Fraction</div>
+      <p class="text-sm text-gray" style="margin-bottom:14px;line-height:1.7">
+        When the first factor is a whole number, we can use <strong>repeated addition</strong> — the familiar extension of whole-number multiplication.
+        <span class="text-sage font-7">3 × ¼ means add ¼ three times.</span>
+      </p>
+      <div class="frac-build">
+        <div><span class="lbl">Whole number</span><input type="number" id="c1-whole" class="num-inp" value="3" min="1" max="8" oninput="renderCase1()"/></div>
+        <div class="op-sym">×</div>
+        <div>
+          <span class="lbl">Fraction</span>
+          <div class="fraction-input">
+            <input type="number" id="c1-n" class="num-inp" value="1" min="1" max="9" oninput="renderCase1()"/>
+            <div class="frac-line"></div>
+            <input type="number" id="c1-d" class="num-inp" value="4" min="1" max="12" oninput="renderCase1()"/>
+          </div>
+        </div>
+      </div>
+      <div id="c1-vis"></div>
+    </div>
+
+    <!-- Case 2 -->
+    <div id="case2" class="hidden">
+      <span class="badge badge-rust">FRACTION OF A WHOLE</span>
+      <div class="h3 h3-rust">Case 2: Fraction × Whole Number</div>
+      <p class="text-sm text-gray" style="margin-bottom:14px;line-height:1.7">
+        We can't add 8 one-half times! Instead, <span class="text-rust font-7">½ × 8 means "take one-half <em>of</em> 8."</span>
+        The word "of" is multiplication — we're scaling the whole number by the fraction.
+      </p>
+      <div class="frac-build">
+        <div>
+          <span class="lbl">Fraction</span>
+          <div class="fraction-input">
+            <input type="number" id="c2-n" class="num-inp" value="1" min="1" max="9" oninput="renderCase2()"/>
+            <div class="frac-line"></div>
+            <input type="number" id="c2-d" class="num-inp" value="2" min="1" max="12" oninput="renderCase2()"/>
+          </div>
+        </div>
+        <div class="op-sym">×</div>
+        <div><span class="lbl">Whole number</span><input type="number" id="c2-whole" class="num-inp" value="8" min="1" max="20" oninput="renderCase2()"/></div>
+      </div>
+      <div id="c2-vis"></div>
+    </div>
+
+    <!-- Case 3 -->
+    <div id="case3" class="hidden">
+      <span class="badge badge-plum">AREA MODEL</span>
+      <div class="h3 h3-plum">Case 3: Fraction × Fraction</div>
+      <p class="text-sm text-gray" style="margin-bottom:14px;line-height:1.7">
+        Repeated addition doesn't apply here. Instead, we <strong>take a fraction <em>of</em> a fraction</strong> using a rectangular area model.
+        <span class="text-plum font-7">Shade columns for the first fraction, rows for the second — the overlap is the product.</span>
+      </p>
+      <div class="frac-build">
+        <div>
+          <span class="lbl">Fraction 1</span>
+          <div class="fraction-input">
+            <input type="number" id="c3-n1" class="num-inp" value="2" min="1" max="9" oninput="renderCase3()"/>
+            <div class="frac-line"></div>
+            <input type="number" id="c3-d1" class="num-inp" value="3" min="1" max="9" oninput="renderCase3()"/>
+          </div>
+        </div>
+        <div class="op-sym">×</div>
+        <div>
+          <span class="lbl">Fraction 2</span>
+          <div class="fraction-input">
+            <input type="number" id="c3-n2" class="num-inp" value="3" min="1" max="9" oninput="renderCase3()"/>
+            <div class="frac-line"></div>
+            <input type="number" id="c3-d2" class="num-inp" value="4" min="1" max="9" oninput="renderCase3()"/>
+          </div>
+        </div>
+      </div>
+      <div id="c3-step-ctrl" class="ctrl-row" style="margin-top:0;margin-bottom:14px">
+        <button class="btn btn-ghost btn-sm" onclick="c3Reset()">↺ Reset</button>
+        <button class="btn btn-plum btn-sm" id="c3-next" onclick="c3Next()">Next Step →</button>
+        <span class="step-ctr" id="c3-ctr">Step 0/3</span>
+        <button class="btn btn-ghost btn-sm" onclick="c3All()">Show All</button>
+      </div>
+      <div id="c3-vis"></div>
+    </div>
+
+  </div><!-- end card -->
+
+  <!-- Multiplication formula -->
+  <div class="card" style="border-left:4px solid var(--gold)">
+    <div class="h3" style="color:var(--gold)">📐 The Rule — Built from Understanding</div>
+    <p class="text-sm" style="color:var(--gold);line-height:1.8">
+      Once you've seen <em>why</em> it works through the area model, the rule is simply:<br>
+      <strong style="font-size:18px">a/b × c/d = ac/bd</strong> &nbsp;— multiply numerators, multiply denominators, then simplify.
+    </p>
+  </div>
+
+</section>
+
+<!-- ═══════════ DIVISION MEANING ═══════════ -->
+<section id="tab-divmean" class="panel">
+
+  <div class="card card-ink" style="margin-bottom:18px">
+    <div class="lbl" style="color:rgba(255,255,255,.45);margin-bottom:6px">Conceptual Foundation First</div>
+    <p style="font-size:14px;line-height:1.75;opacity:.88">
+      Before any procedure, students must understand:
+      <strong style="color:var(--goldlt)">a ÷ b asks "how many groups of b fit into a?"</strong>
+      The <strong style="color:var(--goldlt)">fraction tile model</strong> makes this visible — line up divisor tiles under the dividend and count how many fit.
+      Work through the three examples below. Press <strong style="color:var(--goldlt)">Show Groups</strong> on each to see the answer revealed.
+    </p>
+  </div>
+
+  <!-- HOW TO READ THE TILES key -->
+  <div class="card" style="border-left:4px solid var(--gold);padding:16px 20px;margin-bottom:18px">
+    <div class="h3" style="color:var(--gold);margin-bottom:8px">📖 How to Read the Tile Model</div>
+    <div class="g3" style="gap:10px;font-size:13px">
+      <div style="background:var(--graylt);border-radius:8px;padding:10px;line-height:1.7">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="display:flex;border-radius:4px;overflow:hidden;height:20px">
+            <div style="width:30px;height:20px;background:var(--sage);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white">1/2</div>
+            <div style="width:30px;height:20px;background:#dde1e7"></div>
+          </div>
+          <strong>Dividend row</strong>
+        </div>
+        All bars = same width (1 whole). Colored tiles show your fraction. Each tile is labeled with its unit fraction.
+      </div>
+      <div style="background:var(--graylt);border-radius:8px;padding:10px;line-height:1.7">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="display:flex;border-radius:4px;overflow:hidden;height:20px">
+            <div style="width:10px;height:20px;background:#6b7280"></div>
+            <div style="width:10px;height:20px;background:#dde1e7;border-left:1px solid white"></div>
+            <div style="width:10px;height:20px;background:#dde1e7;border-left:1px solid white"></div>
+            <div style="width:10px;height:20px;background:#dde1e7;border-left:1px solid white"></div>
+            <div style="width:10px;height:20px;background:#dde1e7;border-left:1px solid white"></div>
+            <div style="width:10px;height:20px;background:#dde1e7;border-left:1px solid white"></div>
+          </div>
+          <strong>1 group row</strong>
+        </div>
+        Shows what one divisor-group looks like. Different tile widths = different fraction sizes.
+      </div>
+      <div style="background:var(--graylt);border-radius:8px;padding:10px;line-height:1.7">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="display:flex;border-radius:4px;overflow:hidden;height:20px;gap:2px">
+            <div style="width:20px;height:20px;background:#c1440e;border-radius:3px"></div>
+            <div style="width:20px;height:20px;background:#5c2d91;border-radius:3px"></div>
+            <div style="width:12px;height:20px;background:#b5830a;border-radius:3px;opacity:.75"></div>
+          </div>
+          <strong>Groups bar</strong>
+        </div>
+        Each color = one group of the divisor placed consecutively. Dashed green line = end of dividend.
+      </div>
+    </div>
+  </div>
+
+  <!-- EXAMPLE 1 : 1/2 ÷ 1/6 = 3  (three exact groups) -->
+  <div class="card" id="ex1-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+      <div>
+        <span class="badge badge-sage">EXAMPLE 1 · Exact Groups</span>
+        <div class="h2" style="margin-bottom:4px">½ ÷ ⅙</div>
+        <p class="text-sm text-gray" style="line-height:1.65;max-width:480px">
+          🍕 You have <strong>½ of a pizza</strong>. Each slice is <strong>⅙</strong> of the whole pizza.
+          <em>How many slices do you have?</em>
+        </p>
+      </div>
+      <button class="btn btn-sage btn-sm" id="ex1-btn" onclick="toggleExample(1)">Show Groups →</button>
+    </div>
+    <div id="ex1-vis"></div>
+  </div>
+
+  <!-- EXAMPLE 2 : 3/4 ÷ 1/4 = 3  (exact, same denominator) -->
+  <div class="card" id="ex2-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+      <div>
+        <span class="badge badge-rust">EXAMPLE 2 · Same Denominator</span>
+        <div class="h2" style="color:var(--rust);margin-bottom:4px">¾ ÷ ¼</div>
+        <p class="text-sm text-gray" style="line-height:1.65;max-width:480px">
+          🧁 You have <strong>¾ cup of sugar</strong>. Each batch of cookies needs <strong>¼ cup</strong>.
+          <em>How many batches can you make?</em>
+        </p>
+      </div>
+      <button class="btn btn-rust btn-sm" id="ex2-btn" onclick="toggleExample(2)">Show Groups →</button>
+    </div>
+    <div id="ex2-vis"></div>
+  </div>
+
+  <!-- EXAMPLE 3 : 2/3 ÷ 1/2 = 1⅓  (partial group) -->
+  <div class="card" id="ex3-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+      <div>
+        <span class="badge badge-plum">EXAMPLE 3 · Partial Group</span>
+        <div class="h2" style="color:var(--plum);margin-bottom:4px">⅔ ÷ ½</div>
+        <p class="text-sm text-gray" style="line-height:1.65;max-width:520px">
+          🚶 Rosa's school is <strong>⅔ of a mile</strong> away. She walks in segments of <strong>½ mile</strong> before resting.
+          <em>How many full segments does she walk — and how far through the last segment does she get?</em>
+        </p>
+        <p class="text-sm" style="color:var(--plum);margin-top:8px;line-height:1.65;max-width:520px">
+          <strong>Note:</strong> The answer 1⅓ means she completes <strong>1 full half-mile segment</strong> and then walks ⅓ of a second segment
+          (i.e., ⅓ × ½ = <strong>⅙ of a mile</strong> further). Distance is continuous — a partial segment makes sense here!
+        </p>
+      </div>
+      <button class="btn btn-plum btn-sm" id="ex3-btn" onclick="toggleExample(3)">Show Groups →</button>
+    </div>
+    <div id="ex3-vis"></div>
+  </div>
+
+  <!-- BIG IDEA callout -->
+  <div class="card card-teal">
+    <div class="h3" style="color:var(--teal)">💡 The Big Idea</div>
+    <div class="g2" style="font-size:13px;color:var(--teal);gap:10px;margin-bottom:12px">
+      <div style="background:rgba(255,255,255,.5);border-radius:8px;padding:12px;line-height:1.75">
+        <strong>When the divisor is <em>smaller</em> than the dividend</strong><br>
+        More than one group fits → quotient &gt; 1<br>
+        <em>Example: ½ ÷ ⅙ = 3</em>
+      </div>
+      <div style="background:rgba(255,255,255,.5);border-radius:8px;padding:12px;line-height:1.75">
+        <strong>When the divisor is <em>larger</em> than the dividend</strong><br>
+        Less than one group fits → quotient &lt; 1<br>
+        <em>Example: ¼ ÷ ½ = ½</em>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,.6);border-radius:8px;padding:12px;font-size:13px;color:var(--teal);line-height:1.75;border-left:3px solid var(--teal)">
+      <strong>⚠️ Context matters for partial groups!</strong> A fractional quotient only makes real-world sense when the quantity is
+      <em>continuous</em> (distance, liquid, time, fabric length). Avoid contexts like "how many bows can you make?" —
+      you can't make ⅓ of a bow! Choose contexts where being partway through a group is meaningful.
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════ DIVISION METHODS ═══════════ -->
+<section id="tab-divmeth" class="panel">
+
+  <div class="card card-ink" style="margin-bottom:18px">
+    <div class="lbl" style="color:rgba(255,255,255,.45);margin-bottom:6px">Four Methods from Your Textbook</div>
+    <p style="font-size:14px;line-height:1.75;opacity:.88">
+      Your book presents four ways to divide fractions.
+      <strong style="color:var(--goldlt)">Invert &amp; Multiply</strong> is the standard, but the others reveal deep conceptual connections.
+      Use whichever method fits the problem — some are faster for special cases!
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="h2">Division Method Explorer</div>
+    <div class="frac-build">
+      <div>
+        <span class="lbl">Dividend</span>
+        <div class="fraction-input">
+          <input type="number" id="dv-an" class="num-inp" value="3" min="1" max="20" oninput="dvReset()"/>
+          <div class="frac-line"></div>
+          <input type="number" id="dv-ad" class="num-inp" value="4" min="1" max="20" oninput="dvReset()"/>
+        </div>
+      </div>
+      <div class="op-sym">÷</div>
+      <div>
+        <span class="lbl">Divisor</span>
+        <div class="fraction-input">
+          <input type="number" id="dv-bn" class="num-inp" value="1" min="1" max="20" oninput="dvReset()"/>
+          <div class="frac-line"></div>
+          <input type="number" id="dv-bd" class="num-inp" value="3" min="1" max="20" oninput="dvReset()"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="meth-nav">
+      <button class="meth-btn mact-plum" id="dm-inv"  onclick="setDivMeth('inv')">Invert &amp; Multiply</button>
+      <button class="meth-btn"           id="dm-cd"   onclick="setDivMeth('cd')">Common Denominator</button>
+      <button class="meth-btn"           id="dm-mf"   onclick="setDivMeth('mf')">Missing Factor</button>
+      <button class="meth-btn"           id="dm-da"   onclick="setDivMeth('da')">Divide Across</button>
+    </div>
+
+    <div class="work-area" id="dv-work" style="background:var(--graylt);border-radius:10px;padding:18px;min-height:180px"></div>
+
+    <div class="ctrl-row">
+      <button class="btn btn-ghost btn-sm" id="dv-rst" onclick="dvReset()">↺ Reset</button>
+      <button class="btn btn-plum btn-sm" id="dv-nxt" onclick="dvNext()">Next Step →</button>
+      <span class="step-ctr" id="dv-ctr">Step 0</span>
+      <button class="btn btn-ghost btn-sm" onclick="dvAll()">Show All</button>
+    </div>
+  </div>
+
+  <!-- Method comparison -->
+  <div class="card">
+    <div class="h3">When to Use Each Method</div>
+    <div class="g2">
+      <div style="background:var(--plumlt);border-radius:8px;padding:13px">
+        <div class="text-xs font-7" style="color:var(--plum);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Invert &amp; Multiply</div>
+        <div class="text-sm" style="color:var(--plum);line-height:1.7">Works for <strong>any</strong> fraction division. Most widely applicable. The standard algorithm.</div>
+      </div>
+      <div style="background:var(--skylt);border-radius:8px;padding:13px">
+        <div class="text-xs font-7" style="color:var(--sky);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Common Denominator</div>
+        <div class="text-sm" style="color:var(--sky);line-height:1.7">Best when fractions already share a denominator. Simply divide the numerators!</div>
+      </div>
+      <div style="background:var(--sagelt);border-radius:8px;padding:13px">
+        <div class="text-xs font-7" style="color:var(--sage);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Missing Factor</div>
+        <div class="text-sm" style="color:var(--sage);line-height:1.7">Turns division into multiplication. Great for building conceptual understanding.</div>
+      </div>
+      <div style="background:var(--rustlt);border-radius:8px;padding:13px">
+        <div class="text-xs font-7" style="color:var(--rust);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px">Divide Across</div>
+        <div class="text-sm" style="color:var(--rust);line-height:1.7">Divide numerator by numerator, denominator by denominator. Works when they divide evenly!</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════ PRACTICE ═══════════ -->
+<section id="tab-practice" class="panel">
+
+  <div class="score-hdr">
+    <div class="sl">Practice Score</div>
+    <div class="score-nums">
+      <div class="sn"><div class="sn-v" id="sc-cor">0</div><div class="sn-s">Correct</div></div>
+      <div style="font-size:18px;opacity:.25">/</div>
+      <div class="sn"><div class="sn-v" style="color:white" id="sc-tot">0</div><div class="sn-s">Total</div></div>
+      <div class="sn-v" id="sc-pct" style="font-size:16px;display:none"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="flex justify-between items-center flex-wrap gap-12" style="margin-bottom:16px">
+      <div class="h2">Practice Problem</div>
+      <button class="btn btn-ghost btn-sm" onclick="genPrac()">New Problem ↻</button>
+    </div>
+    <div class="prob-card">
+      <div class="pc-ask">Compute</div>
+      <div class="pc-type" id="pp-type">—</div>
+      <div class="pc-expr" id="pp-expr">—</div>
+    </div>
+    <div class="ans-row" id="pp-ans-row"></div>
+    <div id="pp-fb" class="hidden"></div>
+    <button class="btn btn-outline-plum btn-sm" style="margin-top:4px" onclick="toggleSol()">
+      <span id="sol-lbl">👁 Show Worked Solution</span>
+    </button>
+  </div>
+
+  <div id="pp-sol" class="card hidden">
+    <div class="h3">📝 Worked Solution</div>
+    <div id="pp-sol-body"></div>
+  </div>
+
+</section>
+</main>
+
+<script>
+/* ══════════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════════ */
+function gcd(a,b){return b===0?a:gcd(b,a%b);}
+function lcm(a,b){return a*b/gcd(a,b);}
+function simplify(n,d){if(d===0)return[n,d];const g=gcd(Math.abs(n),Math.abs(d));return[n/g,d/g];}
+function fracHTML(n,d,color){
+  const [sn,sd]=simplify(n,d);
+  if(sd===1)return`<span style="font-weight:800;color:${color||'inherit'}">${sn}</span>`;
+  return`<span style="display:inline-flex;flex-direction:column;align-items:center;line-height:1.1;vertical-align:middle;font-weight:800;color:${color||'inherit'};margin:0 2px"><span>${sn}</span><span style="border-top:2.5px solid ${color||'currentColor'};width:100%;min-width:14px"></span><span>${sd}</span></span>`;
+}
+function fracTxt(n,d){const[sn,sd]=simplify(n,d);return sd===1?`${sn}`:`${sn}/${sd}`;}
+
+/* ══════════════════════════════════════════════
+   TAB SWITCHING
+══════════════════════════════════════════════ */
+function switchTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ══════════════════════════════════════════════
+   MULTIPLICATION — CASE 1
+══════════════════════════════════════════════ */
+function renderCase1(){
+  const w=+document.getElementById('c1-whole').value||1;
+  const n=+document.getElementById('c1-n').value||1;
+  const d=+document.getElementById('c1-d').value||1;
+  const rn=w*n,rd=d;const[sn,sd]=simplify(rn,rd);
+  let html=`<div class="info-box note">Repeated addition: ${w} × ${fracTxt(n,d)} = `;
+  html+=Array.from({length:w},()=>fracTxt(n,d)).join(' + ')+` = ${fracTxt(rn,rd)}</div>`;
+  // Visual bar strips
+  html+=`<div class="strip-wrap">`;
+  for(let i=0;i<w;i++){
+    html+=`<div class="strip-row"><div class="strip-lbl">Group ${i+1}</div>`;
+    for(let j=0;j<d;j++){
+      const isShaded=j<n;
+      html+=`<div class="strip-unit" style="width:${Math.min(50,300/d)}px;background:${isShaded?'var(--sage)':'#d1d5db'};border:2px solid white">${isShaded?fracTxt(n,d):''}</div>`;
+    }
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+  html+=`<div class="result-ban result-sage" style="margin-top:14px"><div class="rb-lbl">${w} × ${fracTxt(n,d)}</div><div class="rb-val">= ${fracTxt(rn,rd)}${sd!==rd?` = ${fracTxt(sn,sd)}`:''}</div></div>`;
+  document.getElementById('c1-vis').innerHTML=html;
+}
+
+/* ══════════════════════════════════════════════
+   MULTIPLICATION — CASE 2
+══════════════════════════════════════════════ */
+function renderCase2(){
+  const w=+document.getElementById('c2-whole').value||1;
+  const n=+document.getElementById('c2-n').value||1;
+  const d=+document.getElementById('c2-d').value||1;
+  const rn=n*w,rd=d;const[sn,sd]=simplify(rn,rd);
+  let html=`<div class="info-box tip">"${fracTxt(n,d)} <strong>of</strong> ${w}" — we take ${fracTxt(n,d)} of the whole number ${w}.</div>`;
+  // Bar divided into d parts, n of them are selected
+  const unitW=Math.max(32,Math.min(64,400/w));
+  html+=`<div class="strip-wrap"><div class="strip-row"><div class="strip-lbl">${w} units</div>`;
+  for(let i=0;i<w;i++){
+    html+=`<div class="strip-unit" style="width:${unitW}px;background:var(--rust);opacity:${i<rn/d?1:.25}">${i+1}</div>`;
+  }
+  html+=`</div></div>`;
+  html+=`<div class="text-sm text-gray mt-10">Taking ${fracTxt(n,d)} of the ${w} units: we keep ${fracTxt(rn,rd)} ${sd!==rd?`= ${fracTxt(sn,sd)}`:''}</div>`;
+  html+=`<div class="result-ban result-gold mt-10"><div class="rb-lbl">${fracTxt(n,d)} × ${w}</div><div class="rb-val">= ${fracTxt(sn,sd)}</div></div>`;
+  document.getElementById('c2-vis').innerHTML=html;
+}
+
+/* ══════════════════════════════════════════════
+   MULTIPLICATION — CASE 3 (AREA MODEL)
+══════════════════════════════════════════════ */
+let c3Step=0;
+function c3Reset(){c3Step=0;renderCase3();}
+function c3Next(){c3Step=Math.min(3,c3Step+1);renderCase3();}
+function c3All(){c3Step=3;renderCase3();}
+
+function renderCase3(){
+  const n1=Math.min(+document.getElementById('c3-n1').value||1,+document.getElementById('c3-d1').value-1)||1;
+  const d1=+document.getElementById('c3-d1').value||1;
+  const n2=Math.min(+document.getElementById('c3-n2').value||1,+document.getElementById('c3-d2').value-1)||1;
+  const d2=+document.getElementById('c3-d2').value||1;
+  const rn=n1*n2,rd=d1*d2;const[sn,sd]=simplify(rn,rd);
+
+  document.getElementById('c3-ctr').textContent=`Step ${c3Step}/3`;
+  document.getElementById('c3-next').disabled=(c3Step>=3);
+
+  const W=300,H=240,pad=16;
+  const cW=(W-pad*2)/d1,rH=(H-pad*2)/d2;
+
+  let svg=`<svg width="${W+40}" height="${H+50}" viewBox="-20 -10 ${W+60} ${H+60}">`;
+  // Background rect
+  svg+=`<rect x="${pad}" y="${pad}" width="${W-pad*2}" height="${H-pad*2}" fill="#f8fafc" stroke="#e5e7eb" stroke-width="1.5" rx="4"/>`;
+
+  // Step 1: shade columns (first fraction — vertical)
+  if(c3Step>=1){
+    for(let c=0;c<n1;c++){
+      svg+=`<rect x="${pad+c*cW}" y="${pad}" width="${cW}" height="${H-pad*2}" fill="rgba(45,106,79,.22)" stroke="none"/>`;
+    }
+    // Column lines
+    for(let c=1;c<d1;c++){
+      svg+=`<line x1="${pad+c*cW}" y1="${pad}" x2="${pad+c*cW}" y2="${H-pad}" stroke="#2d6a4f" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    }
+    svg+=`<text x="${pad+(n1*cW)/2}" y="${H-pad+18}" font-size="12" fill="var(--sage)" font-weight="700" text-anchor="middle">${fracTxt(n1,d1)}</text>`;
+    svg+=`<text x="${W/2}" y="${pad-6}" font-size="11" fill="var(--sage)" text-anchor="middle">← ${d1} equal columns →</text>`;
+  }
+
+  // Step 2: shade rows (second fraction — horizontal)
+  if(c3Step>=2){
+    for(let r=0;r<n2;r++){
+      svg+=`<rect x="${pad}" y="${pad+r*rH}" width="${W-pad*2}" height="${rH}" fill="rgba(92,45,145,.18)" stroke="none"/>`;
+    }
+    for(let r=1;r<d2;r++){
+      svg+=`<line x1="${pad}" y1="${pad+r*rH}" x2="${W-pad}" y2="${pad+r*rH}" stroke="#5c2d91" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+    }
+    svg+=`<text x="${pad-8}" y="${pad+(n2*rH)/2+4}" font-size="12" fill="var(--plum)" font-weight="700" text-anchor="end">${fracTxt(n2,d2)}</text>`;
+    svg+=`<text x="${pad-8}" y="${H/2+4}" font-size="11" fill="var(--plum)" text-anchor="end" transform="rotate(-90,${pad-24},${H/2})">↑${d2}↓</text>`;
+  }
+
+  // Step 3: highlight overlap
+  if(c3Step>=3){
+    for(let c=0;c<n1;c++){
+      for(let r=0;r<n2;r++){
+        svg+=`<rect x="${pad+c*cW+1}" y="${pad+r*rH+1}" width="${cW-2}" height="${rH-2}" fill="rgba(181,131,10,.65)" stroke="rgba(181,131,10,.9)" stroke-width="1.5" rx="2"/>`;
+      }
+    }
+    // Count label
+    svg+=`<text x="${W/2+10}" y="${H+42}" font-size="13" fill="var(--gold)" font-weight="800" text-anchor="middle">${n1*n2} of ${d1*d2} cells = ${fracTxt(rn,rd)}${sd!==rd?` = ${fracTxt(sn,sd)}`:''}</text>`;
+  }
+
+  // Border
+  svg+=`<rect x="${pad}" y="${pad}" width="${W-pad*2}" height="${H-pad*2}" fill="none" stroke="#94a3b8" stroke-width="2" rx="4"/>`;
+  svg+=`</svg>`;
+
+  let legend=`<div class="g3" style="font-size:12px;margin-top:8px;gap:8px">`;
+  if(c3Step>=1) legend+=`<div style="background:rgba(45,106,79,.15);border-radius:6px;padding:8px;color:var(--sage)"><strong>${fracTxt(n1,d1)}</strong> = shaded columns (vertical)</div>`;
+  if(c3Step>=2) legend+=`<div style="background:rgba(92,45,145,.1);border-radius:6px;padding:8px;color:var(--plum)"><strong>${fracTxt(n2,d2)}</strong> = shaded rows (horizontal)</div>`;
+  if(c3Step>=3) legend+=`<div style="background:var(--goldlt);border-radius:6px;padding:8px;color:var(--gold)"><strong>Overlap</strong> = ${fracTxt(rn,rd)}${sd!==rd?` = ${fracTxt(sn,sd)}`:''}</div>`;
+  legend+=`</div>`;
+
+  let result='';
+  if(c3Step>=3){
+    result=`<div class="result-ban result-plum"><div class="rb-lbl">${fracTxt(n1,d1)} × ${fracTxt(n2,d2)}</div><div class="rb-val">= ${fracTxt(rn,rd)}${sd!==rd?` = ${fracTxt(sn,sd)}`:''}</div></div>`;
+  }
+
+  let stepGuide='';
+  if(c3Step===0) stepGuide=`<div class="info-box note">Press "Next Step →" to build the area model step by step.</div>`;
+  if(c3Step===1) stepGuide=`<div class="info-box" style="background:rgba(45,106,79,.1);color:var(--sage);border-left:4px solid var(--sage)">Step 1: The green shading shows ${fracTxt(n1,d1)} of the rectangle divided into ${d1} equal columns.</div>`;
+  if(c3Step===2) stepGuide=`<div class="info-box" style="background:rgba(92,45,145,.1);color:var(--plum);border-left:4px solid var(--plum)">Step 2: The purple shading shows ${fracTxt(n2,d2)} of the rectangle divided into ${d2} equal rows.</div>`;
+  if(c3Step===3) stepGuide=`<div class="info-box" style="background:var(--goldlt);color:var(--gold);border-left:4px solid var(--gold)">Step 3: The <strong>gold overlap</strong> region = ${n1*n2} cells out of ${d1*d2} total cells = ${fracTxt(rn,rd)}${sd!==rd?` = ${fracTxt(sn,sd)}`:''}</div>`;
+
+  document.getElementById('c3-vis').innerHTML=stepGuide+`<div class="svg-wrap">${svg}</div>`+legend+result;
+}
+
+/* ══════════════════════════════════════════════
+   CASE SWITCHING
+══════════════════════════════════════════════ */
+function setCase(n,btn){
+  [1,2,3].forEach(i=>{document.getElementById('case'+i).classList.toggle('hidden',i!==n);});
+  document.querySelectorAll('.case-btn').forEach(b=>b.classList.remove('cact'));
+  btn.classList.add('cact');
+  if(n===1)renderCase1();
+  if(n===2)renderCase2();
+  if(n===3){c3Step=0;renderCase3();}
+}
+
+/* ══════════════════════════════════════════════
+   DIVISION MEANING — FRACTION TILE MODEL
+══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   DIVISION MEANING — THREE STATIC TILE EXAMPLES
+══════════════════════════════════════════════ */
+
+// State: which examples have been revealed
+const exRevealed={1:false,2:false,3:false};
+
+// Each example definition
+const EXAMPLES={
+  1:{dn:1,dd:2, vn:1,vd:6, accentBtn:'btn-sage', accentColor:'var(--sage)', label:'sage'},
+  2:{dn:3,dd:4, vn:1,vd:4, accentBtn:'btn-rust', accentColor:'var(--rust)', label:'rust'},
+  3:{dn:2,dd:3, vn:1,vd:2, accentBtn:'btn-plum', accentColor:'var(--plum)', label:'plum'},
+};
+
+// Group fill colors for the group rows (distinct per group)
+const GROUP_COLORS=['#c1440e','#5c2d91','#1565c0','#b5830a','#065f46'];
+
+function toggleExample(n){
+  exRevealed[n]=!exRevealed[n];
+  renderExample(n);
+  const btn=document.getElementById('ex'+n+'-btn');
+  btn.textContent=exRevealed[n]?'← Hide Groups':'Show Groups →';
+}
+
+function buildTileVis(dn, dd, vn, vd, revealed){
+  /*
+    TRUE FRACTION TILE MODEL
+    ─────────────────────────
+    Every bar is exactly BAR_W pixels wide = "1 whole".
+    • Dividend row  : dd equal tiles, each BAR_W/dd wide, first dn colored green.
+    • "1 group" row : vd equal tiles, each BAR_W/vd wide, first vn colored grey.
+    • Groups bar    : divisor-sized colored blocks (width = vn/vd × BAR_W) placed
+                      consecutively, with a dashed line at the dividend boundary.
+    This exactly mirrors the physical fraction-tile model from the textbook.
+  */
+  const BAR_W = 480;   // px — represents 1 whole
+  const CELL_H = 44;   // px row height
+  const LABEL_W = 106; // px label column
+
+  const dividendPx = (dn / dd) * BAR_W;   // where the dividend ends
+  const divisorPx  = (vn / vd) * BAR_W;   // width of one full group
+
+  const qn=dn*vd, qd=dd*vn;
+  const[sqn,sqd]=simplify(qn,qd);
+  const fullGroups  = Math.floor(sqn/sqd);
+  const partialFrac = sqn/sqd - fullGroups;
+  const hasPartial  = partialFrac > 0.0001;
+  const totalGroups = fullGroups + (hasPartial ? 1 : 0);
+
+  // partial fraction label (e.g. "1/3 of a group")
+  const LCD2=lcm(dd,vd);
+  const remCells=dn*(LCD2/dd) - fullGroups*vn*(LCD2/vd);
+  const[rpn,rpd]=simplify(remCells, vn*(LCD2/vd));
+
+  // ── helpers ──────────────────────────────────────────────
+  // Row wrapper: label + bar + optional annotation
+  function rowWrap(label, lColor, barInner, note=''){
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
+      <div style="min-width:${LABEL_W}px;font-size:12px;font-weight:700;color:${lColor};line-height:1.4">${label}</div>
+      <div style="position:relative;width:${BAR_W}px;height:${CELL_H}px;flex-shrink:0;border-radius:7px;overflow:hidden;border:2px solid rgba(0,0,0,0.08)">${barInner}</div>
+      ${note?`<div style="font-size:12px;font-weight:700;line-height:1.4;color:inherit;white-space:nowrap">${note}</div>`:''}
+    </div>`;
+  }
+
+  // Build a row of N equal labeled tiles, first K filled
+  function tiledBar(N, K, fillColor, emptyColor='#dde1e7'){
+    const w = BAR_W / N;
+    const fontSize = w > 48 ? 12 : w > 28 ? 10 : 8;
+    let out = '';
+    for(let i=0;i<N;i++){
+      const filled = i < K;
+      const bg = filled ? fillColor : emptyColor;
+      const textColor = filled ? 'rgba(255,255,255,0.92)' : '#94a3b8';
+      const borderR = i < N-1 ? '2px solid rgba(255,255,255,0.45)' : 'none';
+      out += `<div style="position:absolute;left:${i*w}px;top:0;width:${w}px;height:100%;
+                background:${bg};border-right:${borderR};
+                display:flex;align-items:center;justify-content:center;
+                font-size:${fontSize}px;font-weight:700;color:${textColor}">
+                ${w >= 24 ? `1/${N}` : ''}
+              </div>`;
+    }
+    return out;
+  }
+
+  // ── build HTML ─────────────────────────────────────────────
+  let html = `<div style="overflow-x:auto;padding-bottom:10px">`;
+
+  // ① Dividend row
+  html += rowWrap(
+    `${fracTxt(dn,dd)}<br><span style="font-size:10px;font-weight:400;color:#94a3b8">dividend</span>`,
+    'var(--sage)',
+    tiledBar(dd, dn, 'var(--sage)')
+  );
+
+  // ② "1 group" reference row
+  html += rowWrap(
+    `1 group = ${fracTxt(vn,vd)}<br><span style="font-size:10px;font-weight:400;color:#94a3b8">divisor</span>`,
+    '#64748b',
+    tiledBar(vd, vn, '#6b7280')
+  );
+
+  // ③ Divider
+  html += `<div style="height:2px;background:var(--border);margin:4px 0 10px ${LABEL_W+10}px;width:${BAR_W}px"></div>`;
+
+  if(revealed){
+    // ④ Groups bar: divisor-sized blocks placed consecutively
+    const GCOLORS=['#c1440e','#5c2d91','#1565c0','#065f46','#b5830a'];
+    let groupsInner = '';
+
+    // Grey background (whole)
+    groupsInner += `<div style="position:absolute;inset:0;background:#dde1e7"></div>`;
+
+    // Subtle green tint showing dividend extent
+    groupsInner += `<div style="position:absolute;left:0;top:0;width:${dividendPx}px;height:100%;background:rgba(45,106,79,0.12)"></div>`;
+
+    // Colored group blocks
+    for(let g=0; g<Math.min(totalGroups,10); g++){
+      const isPartial=(g===fullGroups && hasPartial);
+      const startPx = g * divisorPx;
+      const widthPx = isPartial ? partialFrac * divisorPx : divisorPx;
+      const col = isPartial ? '#b5830a' : GCOLORS[g % GCOLORS.length];
+      const numFSize = widthPx > 40 ? 13 : 10;
+      groupsInner += `<div style="position:absolute;left:${startPx}px;top:3px;width:${widthPx-2}px;height:calc(100%-6px);
+          background:${col};border-radius:4px;opacity:${isPartial?0.75:1};
+          display:flex;align-items:center;justify-content:center;
+          font-size:${numFSize}px;font-weight:800;color:rgba(255,255,255,0.9)">
+          ${widthPx > 32 ? g+1 : ''}
+      </div>`;
+    }
+
+    // Dashed vertical line at dividend boundary
+    groupsInner += `<div style="position:absolute;left:${dividendPx-1}px;top:0;width:2px;height:100%;
+        background:rgba(45,106,79,0.7);border-right:2px dashed rgba(45,106,79,0.6)"></div>`;
+
+    // Annotation text
+    const note = hasPartial
+      ? `<span style="color:var(--gold)">← ${rpn}/${rpd} partial</span>`
+      : `<span style="color:var(--sage)">← exactly ${fullGroups}</span>`;
+
+    html += rowWrap(
+      `Groups<br><span style="font-size:10px;font-weight:400;color:#94a3b8">${fracTxt(vn,vd)} each</span>`,
+      '#64748b',
+      groupsInner,
+      note
+    );
+
+    // ⑤ Color legend chips
+    html += `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:${LABEL_W+10}px;margin-top:4px;margin-bottom:12px">`;
+    for(let g=0;g<Math.min(totalGroups,10);g++){
+      const isPartial=(g===fullGroups&&hasPartial);
+      const col=isPartial?'#b5830a':['#c1440e','#5c2d91','#1565c0','#065f46','#b5830a'][g%5];
+      html+=`<span style="background:${col};color:white;padding:3px 11px;border-radius:99px;font-size:11px;font-weight:700;opacity:${isPartial?.8:1}">
+        Group ${g+1}${isPartial?` (${rpn}/${rpd} of a group)`:''}
+      </span>`;
+    }
+    html += `</div>`;
+
+    // ⑥ Answer banner
+    const wholeP=Math.floor(sqn/sqd);
+    const remN=sqn-wholeP*sqd;
+    let ansDisplay = sqd===1 ? `${sqn}` : wholeP>0 ? `${wholeP} and ${remN}/${sqd}` : `${sqn}/${sqd}`;
+    html+=`<div class="result-ban" style="background:var(--goldlt);border:2px solid rgba(181,131,10,.3);animation:popIn .35s ease">
+      <div class="rb-lbl" style="color:var(--gold)">Answer: ${fracTxt(dn,dd)} ÷ ${fracTxt(vn,vd)}</div>
+      <div class="rb-val" style="color:var(--gold)">= ${ansDisplay} group${sqn!==sqd?'s':''}</div>
+    </div>`;
+
+  } else {
+    html+=`<div class="info-box tip" style="margin-top:6px">
+      <strong>Your turn:</strong> How many groups of <strong>${fracTxt(vn,vd)}</strong> fit inside the <strong>${fracTxt(dn,dd)}</strong> bar above?
+      Press <strong>Show Groups</strong> to see the answer.
+    </div>`;
+  }
+
+  html+=`</div>`;
+  return html;
+}
+
+function renderExample(n){
+  const e=EXAMPLES[n];
+  document.getElementById('ex'+n+'-vis').innerHTML=buildTileVis(e.dn,e.dd,e.vn,e.vd,exRevealed[n]);
+}
+
+function initExamples(){
+  renderExample(1);
+  renderExample(2);
+  renderExample(3);
+}
+
+
+
+/* ══════════════════════════════════════════════
+   DIVISION METHODS
+══════════════════════════════════════════════ */
+let dvMeth='inv',dvStep=0;
+const dvMaxSteps={inv:4,cd:3,mf:3,da:3};
+
+function setDivMeth(m){
+  dvMeth=m;
+  ['inv','cd','mf','da'].forEach(id=>{
+    const b=document.getElementById('dm-'+id);
+    b.classList.toggle('mact-plum',id===m);
+    b.classList.remove('mact-sky');
+  });
+  dvReset();
+}
+
+function dvReset(){
+  dvStep=0;
+  renderDivMeth();
+}
+function dvNext(){dvStep=Math.min(dvMaxSteps[dvMeth],dvStep+1);renderDivMeth();}
+function dvAll(){dvStep=dvMaxSteps[dvMeth];renderDivMeth();}
+
+function getDvNums(){
+  const an=+document.getElementById('dv-an').value||3;
+  const ad=+document.getElementById('dv-ad').value||4;
+  const bn=+document.getElementById('dv-bn').value||1;
+  const bd=+document.getElementById('dv-bd').value||3;
+  return{an,ad,bn,bd};
+}
+
+function renderDivMeth(){
+  const{an,ad,bn,bd}=getDvNums();
+  document.getElementById('dv-ctr').textContent=`Step ${dvStep}/${dvMaxSteps[dvMeth]}`;
+  document.getElementById('dv-nxt').disabled=(dvStep>=dvMaxSteps[dvMeth]);
+  document.getElementById('dv-rst').disabled=(dvStep===0);
+  // answer
+  const qn=an*bd,qd=ad*bn;const[sqn,sqd]=simplify(qn,qd);
+  const work=document.getElementById('dv-work');
+
+  if(dvMeth==='inv')  work.innerHTML=renderInv(an,ad,bn,bd,sqn,sqd);
+  if(dvMeth==='cd')   work.innerHTML=renderCD(an,ad,bn,bd,sqn,sqd);
+  if(dvMeth==='mf')   work.innerHTML=renderMF(an,ad,bn,bd,sqn,sqd);
+  if(dvMeth==='da')   work.innerHTML=renderDA(an,ad,bn,bd,sqn,sqd);
+}
+
+function sbHtml(num,lbl,body,eq,state){
+  return`<div class="step-box ${state}"><div class="sb-num">${num}. ${lbl}</div><div class="sb-body">${body}</div>${eq?`<div class="sb-eq">${eq}</div>`:''}</div>`;
+}
+function resultHtml(an,ad,bn,bd,sn,sd){
+  return`<div class="result-ban result-plum"><div class="rb-lbl">${fracTxt(an,ad)} ÷ ${fracTxt(bn,bd)}</div><div class="rb-val">= ${fracTxt(sn,sd)}</div></div>`;
+}
+
+function renderInv(an,ad,bn,bd,sqn,sqd){
+  let h=`<span class="badge badge-plum">INVERT &amp; MULTIPLY</span>
+  <div class="info-box" style="background:rgba(92,45,145,.08);color:var(--plum);border-left:4px solid var(--plum)">
+    Rule: <strong>a/b ÷ c/d = a/b × d/c</strong> — multiply by the reciprocal of the divisor.
+  </div>`;
+  const steps=[
+    ['Write the problem',`Start with the division expression.`,`${fracTxt(an,ad)} ÷ ${fracTxt(bn,bd)}`],
+    ['Find the reciprocal',`Flip the divisor: ${fracTxt(bn,bd)} becomes ${fracTxt(bd,bn)}.`,`${fracTxt(an,ad)} × ${fracTxt(bd,bn)}`],
+    ['Multiply numerators &amp; denominators',`${an} × ${bd} = ${an*bd} &nbsp;|&nbsp; ${ad} × ${bn} = ${ad*bn}`,`= ${fracTxt(an*bd,ad*bn)}`],
+    ['Simplify',`GCD(${an*bd},${ad*bn}) = ${gcd(an*bd,ad*bn)}`,`= ${fracTxt(sqn,sqd)}`],
+  ];
+  steps.slice(0,dvStep).forEach((s,i)=>{
+    h+=sbHtml(i+1,s[0],s[1],s[2],i===dvStep-1?'cur':'done');
+  });
+  if(dvStep>=4) h+=resultHtml(an,ad,bn,bd,sqn,sqd);
+  return h||`<p class="text-sm text-gray">Press "Next Step →" to begin.</p>`;
+}
+
+function renderCD(an,ad,bn,bd,sqn,sqd){
+  const LCD=lcm(ad,bd);
+  const newAN=an*(LCD/ad),newBN=bn*(LCD/bd);
+  let h=`<span class="badge badge-sky">COMMON DENOMINATOR</span>
+  <div class="info-box note">
+    If two fractions share a denominator: <strong>a/d ÷ b/d = a/b</strong> — just divide the numerators!
+  </div>`;
+  const steps=[
+    ['Find the LCD',`LCD(${ad}, ${bd}) = ${LCD}`,``],
+    ['Rewrite both fractions',`Convert to equivalent fractions with denominator ${LCD}.`,`${fracTxt(newAN,LCD)} ÷ ${fracTxt(newBN,LCD)}`],
+    ['Divide numerators',`Same denominator → just divide: ${newAN} ÷ ${newBN} = ${fracTxt(newAN,newBN)}`,`= ${fracTxt(sqn,sqd)}`],
+  ];
+  steps.slice(0,dvStep).forEach((s,i)=>{
+    h+=sbHtml(i+1,s[0],s[1],s[2],i===dvStep-1?'cur':'done');
+  });
+  if(dvStep>=3) h+=resultHtml(an,ad,bn,bd,sqn,sqd);
+  return h||`<p class="text-sm text-gray">Press "Next Step →" to begin.</p>`;
+}
+
+function renderMF(an,ad,bn,bd,sqn,sqd){
+  let h=`<span class="badge badge-sage">MISSING FACTOR</span>
+  <div class="info-box" style="background:rgba(45,106,79,.08);color:var(--sage);border-left:4px solid var(--sage)">
+    Division is the inverse of multiplication: <strong>${fracTxt(an,ad)} ÷ ${fracTxt(bn,bd)} = ?</strong> means <strong>${fracTxt(bn,bd)} × ? = ${fracTxt(an,ad)}</strong>
+  </div>`;
+  const steps=[
+    ['Rewrite as multiplication',`Find the missing factor □ such that:`,`${fracTxt(bn,bd)} × □ = ${fracTxt(an,ad)}`],
+    ['Reason it out',`Since ${fracTxt(bn,bd)} × ${fracTxt(sqn,sqd)} = ${fracTxt(bn*sqn,bd*sqd)} = ${fracTxt(an,ad)}, the missing factor is:`,`□ = ${fracTxt(sqn,sqd)}`],
+    ['Verify',`Check: ${fracTxt(bn,bd)} × ${fracTxt(sqn,sqd)} = ${fracTxt(bn*sqn,bd*sqd)} ✓`,``],
+  ];
+  steps.slice(0,dvStep).forEach((s,i)=>{
+    h+=sbHtml(i+1,s[0],s[1],s[2],i===dvStep-1?'cur':'done');
+  });
+  if(dvStep>=3) h+=resultHtml(an,ad,bn,bd,sqn,sqd);
+  return h||`<p class="text-sm text-gray">Press "Next Step →" to begin.</p>`;
+}
+
+function renderDA(an,ad,bn,bd,sqn,sqd){
+  const numQ=an/bn,denQ=ad/bd;
+  const works=(Number.isInteger(numQ)&&Number.isInteger(denQ));
+  let h=`<span class="badge badge-rust">DIVIDE ACROSS</span>
+  <div class="info-box" style="background:rgba(193,68,14,.08);color:var(--rust);border-left:4px solid var(--rust)">
+    Divide numerator by numerator, denominator by denominator: <strong>(a/b) ÷ (c/d) = (a÷c)/(b÷d)</strong> — when they divide evenly!
+  </div>`;
+  if(!works) h+=`<div class="info-box warn">⚠️ ${an} ÷ ${bn} = ${(an/bn).toFixed(2)} and/or ${ad} ÷ ${bd} = ${(ad/bd).toFixed(2)} — not whole numbers. This method still works, but we'd need to simplify a complex fraction. <strong>Invert &amp; Multiply is easier for these numbers.</strong></div>`;
+  const steps=[
+    ['Set up divide across',`Write it as: (${an} ÷ ${bn}) / (${ad} ÷ ${bd})`,``],
+    ['Divide numerators &amp; denominators',works?`${an} ÷ ${bn} = ${numQ} &nbsp;|&nbsp; ${ad} ÷ ${bd} = ${denQ}`:`${an} ÷ ${bn} = ${fracTxt(an,bn)} &nbsp;|&nbsp; ${ad} ÷ ${bd} = ${fracTxt(ad,bd)}`,`= ${works?fracTxt(numQ,denQ):fracTxt(an*bd,ad*bn)}`],
+    ['Simplify',``,`= ${fracTxt(sqn,sqd)}`],
+  ];
+  steps.slice(0,dvStep).forEach((s,i)=>{
+    h+=sbHtml(i+1,s[0],s[1],s[2],i===dvStep-1?'cur':'done');
+  });
+  if(dvStep>=3) h+=resultHtml(an,ad,bn,bd,sqn,sqd);
+  return h||`<p class="text-sm text-gray">Press "Next Step →" to begin.</p>`;
+}
+
+/* ══════════════════════════════════════════════
+   PRACTICE
+══════════════════════════════════════════════ */
+const MULT_PROBS=[
+  {t:'mult',an:1,ad:2,bn:3,ad2:4},{t:'mult',an:2,ad:3,bn:3,ad2:5},
+  {t:'mult',an:3,ad:4,bn:1,ad2:5},{t:'mult',an:2,ad:5,bn:4,ad2:7},
+  {t:'mult',an:1,ad:3,bn:3,ad2:8},{t:'mult',an:5,ad:6,bn:2,ad2:9},
+  {t:'mult',an:3,ad:8,bn:5,ad2:6},{t:'mult',an:1,ad:2,bn:1,ad2:3},
+  {t:'mult',w:3,an:1,ad:4,bn:0,ad2:0},{t:'mult',w:2,an:2,ad:5,bn:0,ad2:0},
+];
+const DIV_PROBS=[
+  {t:'div',an:1,ad:2,bn:1,bd:6},{t:'div',an:3,ad:4,bn:1,bd:2},
+  {t:'div',an:2,ad:3,bn:3,bd:5},{t:'div',an:7,ad:18,bn:14,bd:27},
+  {t:'div',an:8,ad:15,bn:2,bd:3},{t:'div',an:5,ad:6,bn:5,bd:8},
+  {t:'div',an:9,ad:10,bn:3,bd:5},{t:'div',an:3,ad:4,bn:5,bd:7},
+  {t:'div',an:2,ad:5,bn:3,bd:10},{t:'div',an:4,ad:9,bn:2,bd:3},
+];
+const ALL_PROBS=[...MULT_PROBS,...DIV_PROBS];
+
+let pProb=null,pChecked=false,pSolVis=false,pScoreCor=0,pScoreTot=0;
+
+function genPrac(){
+  pProb=ALL_PROBS[Math.floor(Math.random()*ALL_PROBS.length)];
+  pChecked=false;pSolVis=false;
+  renderPrac();
+  document.getElementById('pp-sol').classList.add('hidden');
+  document.getElementById('sol-lbl').textContent='👁 Show Worked Solution';
+}
+
+function renderPrac(){
+  const p=pProb;
+  let expr='',typeStr='';
+  if(p.t==='mult'){
+    if(p.w){expr=`${p.w} × ${fracTxt(p.an,p.ad)}`;typeStr='Fraction Multiplication';}
+    else{expr=`${fracTxt(p.an,p.ad)} × ${fracTxt(p.bn,p.ad2)}`;typeStr='Fraction Multiplication';}
+  } else {
+    expr=`${fracTxt(p.an,p.ad)} ÷ ${fracTxt(p.bn,p.bd)}`;typeStr='Fraction Division';
+  }
+  document.getElementById('pp-type').textContent=typeStr;
+  document.getElementById('pp-expr').textContent=expr;
+
+  const ans=getAnswer(p);const[sn,sd]=simplify(ans.n,ans.d);
+  const row=document.getElementById('pp-ans-row');
+  let html=`<div><span class="lbl">Answer (as fraction)</span><div class="fraction-input">`;
+  html+=`<input type="number" id="pp-n" class="num-inp" placeholder="num"/>`;
+  html+=`<div class="frac-line"></div>`;
+  html+=`<input type="number" id="pp-d" class="num-inp" placeholder="den"/>`;
+  html+=`</div></div>`;
+  if(!pChecked){
+    html+=`<button class="btn btn-sage" style="padding-bottom:11px;margin-top:20px" onclick="checkPrac()">Check ✓</button>`;
+  } else {
+    html+=`<button class="btn btn-ink" style="padding-bottom:11px;margin-top:20px" onclick="genPrac()">Next →</button>`;
+  }
+  row.innerHTML=html;
+  document.getElementById('pp-fb').classList.add('hidden');
+}
+
+function getAnswer(p){
+  if(p.t==='mult'){
+    if(p.w) return{n:p.w*p.an,d:p.ad};
+    return{n:p.an*p.bn,d:p.ad*p.ad2};
+  } else {
+    return{n:p.an*p.bd,d:p.ad*p.bn};
+  }
+}
+
+function checkPrac(){
+  const pn=+document.getElementById('pp-n').value;
+  const pd=+document.getElementById('pp-d').value;
+  const ans=getAnswer(pProb);
+  const[sn,sd]=simplify(ans.n,ans.d);
+  const[usn,usd]=simplify(pn,pd||1);
+  const correct=(usn===sn&&usd===sd)||(pn===sn&&pd===sd);
+  pChecked=true;pScoreTot++;if(correct)pScoreCor++;
+  updateScore();
+
+  // Style inputs
+  if(pd){
+    document.getElementById('pp-n').className='num-inp '+(correct?'cor':'wrg');
+    document.getElementById('pp-d').className='num-inp '+(correct?'cor':'wrg');
+  }
+  const fb=document.getElementById('pp-fb');
+  fb.className='fb '+(correct?'fb-ok':'fb-no');
+  fb.innerHTML=`<div class="fb-t">${correct?'✓ Correct! Well done.':'✗ Not quite.'}</div>`
+    +(!correct?`<div class="fb-d">The answer is ${fracTxt(sn,sd)}.</div>`:'');
+  fb.classList.remove('hidden');
+
+  // Re-render with Next button
+  renderPrac();
+  if(document.getElementById('pp-n')) document.getElementById('pp-n').value=pn;
+  if(document.getElementById('pp-d')) document.getElementById('pp-d').value=pd;
+  if(correct){
+    if(document.getElementById('pp-n')) document.getElementById('pp-n').className='num-inp cor';
+    if(document.getElementById('pp-d')) document.getElementById('pp-d').className='num-inp cor';
+  } else {
+    if(document.getElementById('pp-n')) document.getElementById('pp-n').className='num-inp wrg';
+    if(document.getElementById('pp-d')) document.getElementById('pp-d').className='num-inp wrg';
+  }
+  document.getElementById('pp-ans-row').appendChild(fb);
+  fb.classList.remove('hidden');
+}
+
+function updateScore(){
+  document.getElementById('sc-cor').textContent=pScoreCor;
+  document.getElementById('sc-tot').textContent=pScoreTot;
+  const p=document.getElementById('sc-pct');
+  if(pScoreTot>0){p.textContent=Math.round(pScoreCor/pScoreTot*100)+'%';p.style.display='';}
+}
+
+function toggleSol(){
+  pSolVis=!pSolVis;
+  document.getElementById('pp-sol').classList.toggle('hidden',!pSolVis);
+  document.getElementById('sol-lbl').textContent=pSolVis?'Hide Solution':'👁 Show Worked Solution';
+  if(pSolVis) renderSol();
+}
+
+function renderSol(){
+  const p=pProb;
+  const ans=getAnswer(p);const[sn,sd]=simplify(ans.n,ans.d);
+  let html='';
+  if(p.t==='mult'){
+    if(p.w){
+      html+=`<div class="step-box done"><div class="sb-num">Method: Repeated Addition</div><div class="sb-body">Multiply: ${p.w} × ${fracTxt(p.an,p.ad)}</div><div class="sb-eq">= ${fracTxt(p.w*p.an,p.ad)} = ${fracTxt(sn,sd)}</div></div>`;
+    } else {
+      html+=`<div class="step-box done"><div class="sb-num">Method: Multiply across</div><div class="sb-body">Numerators: ${p.an} × ${p.bn} = ${p.an*p.bn}&nbsp;&nbsp;|&nbsp;&nbsp;Denominators: ${p.ad} × ${p.ad2} = ${p.ad*p.ad2}</div><div class="sb-eq">= ${fracTxt(p.an*p.bn,p.ad*p.ad2)} = ${fracTxt(sn,sd)}</div></div>`;
+      html+=`<div class="info-box tip">You can see this visually in the Area Model tab! Try ${fracTxt(p.an,p.ad)} × ${fracTxt(p.bn,p.ad2)}.</div>`;
+    }
+  } else {
+    html+=`<div class="step-box done"><div class="sb-num">Method: Invert &amp; Multiply</div><div class="sb-body">Flip the divisor: ${fracTxt(p.bn,p.bd)} → ${fracTxt(p.bd,p.bn)}</div><div class="sb-eq">${fracTxt(p.an,p.ad)} × ${fracTxt(p.bd,p.bn)} = ${fracTxt(p.an*p.bd,p.ad*p.bn)} = ${fracTxt(sn,sd)}</div></div>`;
+    html+=`<div class="step-box done"><div class="sb-num">Verify</div><div class="sb-body">Check: ${fracTxt(sn,sd)} × ${fracTxt(p.bn,p.bd)} = ${fracTxt(sn*p.bn,sd*p.bd)} = ${fracTxt(p.an,p.ad)} ✓</div><div class="sb-eq"></div></div>`;
+  }
+  html+=`<div class="result-ban result-gold mt-10"><div class="rb-lbl">Answer</div><div class="rb-val">${fracTxt(sn,sd)}</div></div>`;
+  document.getElementById('pp-sol-body').innerHTML=html;
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+renderCase1();renderCase2();c3Step=0;renderCase3();
+initExamples();
+setDivMeth('inv');
+genPrac();
+
+// Wire change events for division method inputs
+['dv-an','dv-ad','dv-bn','dv-bd'].forEach(id=>{
+  document.getElementById(id).addEventListener('change',dvReset);
+});
+</script>
+</body>
+</html>
